@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+
+.env
+
+logs/
+
+dataset/
+
+preprocessing/clean_dataset.csv
+preprocessing/balanced_dataset.csv
+
+*.pdf

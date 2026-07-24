@@ -1,0 +1,25 @@
+Idle Max
+Idle Mean
+Bwd Packet Length Std
+Average Packet Size
+act_data_pkt_fwd
+Total Length of Fwd Packets
+PSH Flag Count
+Total Length of Bwd Packets
+Bwd Header Length
+Total Backward Packets
+Fwd Packet Length Max
+Fwd Packet Length Mean
+Bwd Packet Length Min
+Init_Win_bytes_backward
+FIN Flag Count
+Max Packet Length
+Packet Length Mean
+Flow Bytes/s
+Active Std
+Bwd IAT Mean
+Flow Duration
+Fwd IAT Total
+Active Mean
+Destination Port
+Fwd Header Length

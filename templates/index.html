@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta http-equiv="refresh" content="5">
+
+    <title>AI Network Intrusion Detection System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg-0: #0a0e14;
+            --bg-1: #101620;
+            --bg-2: #161d29;
+            --bg-3: #1e2635;
+            --border: #263041;
+            --border-strong: #354256;
+            --text-primary: #e7ecf3;
+            --text-secondary: #8b98ac;
+            --text-muted: #5a6579;
+            --accent: #3fd0c9;
+            --accent-dim: #1c4f4c;
+            --safe: #34d399;
+            --safe-dim: #123528;
+            --warn: #f5b942;
+            --warn-dim: #3d2f0c;
+            --danger: #f9576a;
+            --danger-dim: #3d1420;
+            --critical: #ff5f5f;
+            --mono: "JetBrains Mono", monospace;
+            --sans: "Inter", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg-0);
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(63, 208, 201, 0.06), transparent 40%),
+                radial-gradient(circle at 85% 20%, rgba(249, 87, 106, 0.05), transparent 35%);
+            color: var(--text-primary);
+            font-family: var(--sans);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+
+        .mono { font-family: var(--mono); }
+
+        /* ---------------- Top bar ---------------- */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: var(--bg-1);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), #2a8f88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-weight: 700;
+            color: #06201e;
+            font-size: 15px;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .brand-text span {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+        }
+
+        .live-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--bg-2);
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--safe);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+            70%  { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        /* ---------------- Layout ---------------- */
+
+        .wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 28px 48px;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 32px 0 12px;
+        }
+
+        .section-label:first-of-type { margin-top: 0; }
+
+        /* ---------------- Stat cards ---------------- */
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 640px)  { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .stat-card {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px;
+            height: 100%;
+        }
+
+        .stat-card.c-total::before    { background: var(--accent); }
+        .stat-card.c-benign::before   { background: var(--safe); }
+        .stat-card.c-attack::before   { background: var(--danger); }
+        .stat-card.c-tcp::before      { background: #6d8ee8; }
+        .stat-card.c-udp::before      { background: var(--warn); }
+        .stat-card.c-conf::before     { background: #b183f0; }
+
+        .stat-value {
+            font-family: var(--mono);
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ---------------- Toolbar / search ---------------- */
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar form {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 260px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], select {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 12px;
+            color: var(--text-primary);
+            font-family: var(--sans);
+            font-size: 13px;
+            outline: none;
+        }
+
+        input[type="text"] { flex: 1; min-width: 200px; }
+
+        input[type="text"]:focus, select:focus { border-color: var(--accent); }
+
+        .btn {
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #06201e;
+        }
+
+        .btn-ghost {
+            background: var(--bg-3);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost:hover { border-color: var(--border-strong); }
+
+        .toolbar-actions { display: flex; gap: 10px; }
+
+        /* ---------------- Cards / panels ---------------- */
+
+        .panel {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-body { padding: 14px 16px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        @media (max-width: 1000px) { .grid-2, .grid-4 { grid-template-columns: 1fr; } }
+
+        /* ---------------- IP lists ---------------- */
+
+        .ip-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 12.5px;
+        }
+
+        .ip-row:last-child { border-bottom: none; }
+
+        .count-badge {
+            font-family: var(--mono);
+            font-size: 11px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: var(--text-secondary);
+        }
+
+        .avg-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        .avg-row:last-child { border-bottom: none; }
+        .avg-row span:last-child { font-family: var(--mono); color: var(--text-primary); }
+
+        /* ---------------- Alerts ---------------- */
+
+        .alert-item {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0;
+        }
+        .alert-item:last-child { border-bottom: none; }
+
+        .alert-attack {
+            font-weight: 600;
+            color: var(--danger);
+            font-size: 13px;
+        }
+        .alert-meta {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            color: var(--safe);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ---------------- Status banners ---------------- */
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 800px) { .status-grid { grid-template-columns: 1fr; } }
+
+        .banner {
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-2);
+        }
+
+        .banner b { font-family: var(--mono); }
+
+        .risk-LOW      { border-color: var(--safe); background: var(--safe-dim); }
+        .risk-MEDIUM   { border-color: var(--warn); background: var(--warn-dim); }
+        .risk-HIGH     { border-color: var(--danger); background: var(--danger-dim); }
+        .risk-CRITICAL { border-color: var(--critical); background: #3d0f14; }
+
+        .risk-tag {
+            font-family: var(--mono);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* ---------------- Table ---------------- */
+
+        .table-wrap { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+        thead th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--bg-3);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover { background: var(--bg-3); }
+
+        .tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .tag-benign { background: var(--safe-dim); color: var(--safe); }
+        .tag-attack { background: var(--danger-dim); color: var(--danger); }
+        .tag-proto  { background: var(--bg-3); color: var(--text-secondary); border: 1px solid var(--border); }
+
+        /* Plotly chart containers: force transparent so our theme shows through */
+        .chart-holder { min-height: 320px; }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div class="brand-text">
+            <h1>Network Intrusion Detection System</h1>
+            <span>Live flow analysis &middot; XGBoost + Isolation Forest</span>
+        </div>
+    </div>
+
+    <div class="live-pill">
+        <span class="pulse-dot"></span>
+        Last updated {{ last_updated }}
+    </div>
+
+</div>
+
+<div class="wrap">
+
+    <!-- Statistics -->
+
+    <div class="stat-grid">
+
+        <div class="stat-card c-total">
+            <div class="stat-value">{{ total }}</div>
+            <div class="stat-label">Total flows</div>
+        </div>
+
+        <div class="stat-card c-benign">
+            <div class="stat-value">{{ benign }}</div>
+            <div class="stat-label">Benign</div>
+        </div>
+
+        <div class="stat-card c-attack">
+            <div class="stat-value">{{ attacks }}</div>
+            <div class="stat-label">Attacks</div>
+        </div>
+
+        <div class="stat-card c-tcp">
+            <div class="stat-value">{{ tcp }}</div>
+            <div class="stat-label">TCP</div>
+        </div>
+
+        <div class="stat-card c-udp">
+            <div class="stat-value">{{ udp }}</div>
+            <div class="stat-label">UDP</div>
+        </div>
+
+        <div class="stat-card c-conf">
+            <div class="stat-value">{{ avg }}%</div>
+            <div class="stat-label">Avg confidence</div>
+        </div>
+
+    </div>
+
+    <!-- Search & actions -->
+
+    <div class="section-label">Search &amp; export</div>
+
+    <div class="toolbar">
+
+        <form method="GET">
+
+            <input
+                type="text"
+                name="ip"
+                placeholder="Search source or destination IP"
+                value="{{ ip_search }}">
+
+            <select name="attack">
+                <option value="">All attacks</option>
+                <option value="BENIGN" {% if attack_filter=="BENIGN" %}selected{% endif %}>BENIGN</option>
+                <option value="PortScan" {% if attack_filter=="PortScan" %}selected{% endif %}>PortScan</option>
+                <option value="DoS Hulk" {% if attack_filter=="DoS Hulk" %}selected{% endif %}>DoS Hulk</option>
+                <option value="DDoS" {% if attack_filter=="DDoS" %}selected{% endif %}>DDoS</option>
+                <option value="Bot" {% if attack_filter=="Bot" %}selected{% endif %}>Bot</option>
+                <option value="FTP-Patator" {% if attack_filter=="FTP-Patator" %}selected{% endif %}>FTP-Patator</option>
+                <option value="SSH-Patator" {% if attack_filter=="SSH-Patator" %}selected{% endif %}>SSH-Patator</option>
+            </select>
+
+            <button class="btn btn-primary" type="submit">Search</button>
+
+        </form>
+
+        <div class="toolbar-actions">
+
+            <a href="/download" class="btn btn-ghost">Download CSV</a>
+            <a href="/report" class="btn btn-ghost">Download PDF report</a>
+
+        </div>
+
+    </div>
+
+    <!-- Charts -->
+
+    <div class="section-label">Traffic breakdown</div>
+
+    <div class="grid-2">
+
+        <div class="panel">
+            <div class="panel-header">Attack distribution</div>
+            <div class="panel-body chart-holder">{{ attack_chart|safe }}</div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">Protocol distribution</div>
+            <div class="panel-body chart-holder">{{ protocol_chart|safe }}</div>
+        </div>
+
+    </div>
+
+    <div class="panel" style="margin-top:16px;">
+        <div class="panel-header">Traffic timeline</div>
+        <div class="panel-body chart-holder">{{ timeline_chart|safe }}</div>
+    </div>
+
+    <!-- Analytics -->
+
+    <div class="section-label">Analytics</div>
+
+    <div class="grid-4">
+
+        <div class="panel">
+            <div class="panel-header">Top source IPs</div>
+            <div class="panel-body">
+                {% for ip,count in top_sources %}
+                <div class="ip-row">
+                    <span>{{ ip }}</span>
+                    <span class="count-badge">{{ count }}</span>
+                </div>
+                {% else %}
+                <div class="empty-state">No data yet</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">Top destination IPs</div>
+            <div class="panel-body">
+                {% for ip,count in top_destinations %}
+                <div class="ip-row">
+                    <span>{{ ip }}</span>
+                    <span class="count-badge">{{ count }}</span>
+                </div>
+                {% else %}
+                <div class="empty-state">No data yet</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">Average statistics</div>
+            <div class="panel-body">
+                <div class="avg-row"><span>Packets</span><span>{{ avg_packets }}</span></div>
+                <div class="avg-row"><span>Bytes</span><span>{{ avg_bytes }}</span></div>
+                <div class="avg-row"><span>Duration</span><span>{{ avg_duration }}s</span></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">Recent alerts</div>
+            <div class="panel-body">
+                {% for alert in recent_alerts %}
+                <div class="alert-item">
+                    <div class="alert-attack">{{ alert.attack }}</div>
+                    <div class="alert-meta">{{ alert.source_ip }} &middot; {{ alert.timestamp }}</div>
+                </div>
+                {% else %}
+                <div class="empty-state">No active alerts</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Status -->
+
+    <div class="section-label">System status</div>
+
+    <div class="status-grid">
+
+        <div class="banner">
+            <span>Last updated</span>
+            <b>{{ last_updated }}</b>
+        </div>
+
+        <div class="banner risk-{{ severity }}">
+            <span>Network risk level</span>
+            <span class="risk-tag">{{ severity }}</span>
+        </div>
+
+    </div>
+
+    <!-- Detection Table -->
+
+    <div class="section-label">Recent detections</div>
+
+    <div class="panel">
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Attack</th>
+                        <th>Confidence</th>
+                        <th>Protocol</th>
+                        <th>Packets</th>
+                        <th>Bytes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>
+                        {% if row[7]=="BENIGN" %}
+                        <span class="tag tag-benign">{{ row[7] }}</span>
+                        {% else %}
+                        <span class="tag tag-attack">{{ row[7] }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ "%.2f"|format(row[8]*100) }}%</td>
+                    <td>
+                        <span class="tag tag-proto">
+                        {% if row[6]==6 %}TCP
+                        {% elif row[6]==17 %}UDP
+                        {% else %}{{ row[6] }}
+                        {% endif %}
+                        </span>
+                    </td>
+                    <td>{{ row[12] }}</td>
+                    <td>{{ row[13] }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9" style="text-align:center; padding: 24px; color: var(--text-muted);">No detections recorded yet</td></tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

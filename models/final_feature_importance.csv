@@ -1,0 +1,26 @@
+Feature,Importance
+Bwd Packet Length Std,0.13417962
+Total Length of Fwd Packets,0.107455544
+Idle Mean,0.0846683
+act_data_pkt_fwd,0.08431564
+Idle Max,0.07610387
+Total Length of Bwd Packets,0.056345724
+Average Packet Size,0.050928053
+Fwd Packet Length Max,0.048724674
+Bwd Packet Length Min,0.04601364
+Total Backward Packets,0.045188405
+Packet Length Mean,0.034445144
+Fwd Packet Length Mean,0.03431716
+Init_Win_bytes_backward,0.030013824
+FIN Flag Count,0.02968117
+PSH Flag Count,0.027303476
+Max Packet Length,0.021540971
+Bwd Header Length,0.021332685
+Active Std,0.014784723
+Active Mean,0.011417192
+Bwd IAT Mean,0.010104958
+Destination Port,0.009967901
+Fwd Header Length,0.008478251
+Flow Bytes/s,0.007776009
+Flow Duration,0.0033028007
+Fwd IAT Total,0.0016102721

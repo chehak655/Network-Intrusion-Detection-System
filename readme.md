@@ -217,6 +217,16 @@ For running continuously rather than in a terminal:
 
 ---
 
+---
+
+## Troubleshooting
+
+- **"Permission denied" / no packets captured** — Packet capture needs elevated privileges. On Windows, run your terminal as Administrator. On Linux, run with `sudo` or grant capability once with the `setcap` command shown above.
+- **Npcap not found (Windows)** — Make sure Npcap is installed with "WinPcap API-compatible mode" checked during installation.
+- **MySQL connection errors** — Double-check `.env` has the correct host, username, and password, and that the `network_ids` database has actually been created.
+- **Flask dashboard doesn't load** — Confirm `main.py` (capture engine) is running in one terminal and `app.py` (dashboard) in a separate one, and that port 5000 isn't already in use.
+- **`ModuleNotFoundError` after setup** — Make sure your virtual environment is activated (`venv\Scripts\activate` on Windows, `source venv/bin/activate` on Mac/Linux) before running `pip install -r requirements.txt`.
+
 ## License
 
 This project was developed for academic and industrial training purposes.

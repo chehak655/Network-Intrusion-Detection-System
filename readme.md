@@ -217,14 +217,6 @@ For running continuously rather than in a terminal:
 
 ---
 
-## Author
-
-**Chehak**
-B.Tech, Computer Science & Engineering (AI/ML), DIT University, Dehradun
-Industrial Training — Bharat Heavy Electricals Limited (BHEL), Haridwar
-
----
-
 ## License
 
 This project was developed for academic and industrial training purposes.

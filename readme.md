@@ -1,6 +1,6 @@
 # 🛡️ AI-Based Network Intrusion Detection System
 
-Real-time network traffic classification using flow-based machine learning — built as an industrial training project at **Bharat Heavy Electricals Limited (BHEL), Haridwar**.
+Real-time network traffic classification using flow-based machine learning — built as an industrial training project.
 
 The system captures live packets, reconstructs them into bidirectional network flows, extracts 68 CICFlowMeter-equivalent statistical features per flow, and classifies each one using a supervised XGBoost model (specific attack types) alongside an unsupervised Isolation Forest model (novel/unknown anomalies) — surfaced through a live web dashboard.
 

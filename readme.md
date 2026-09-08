@@ -15,7 +15,7 @@ The system captures live packets, reconstructs them into bidirectional network f
   - XGBoost multi-class classifier — identifies specific attack types (DDoS, PortScan, Bot, Brute Force, Web Attack, etc.)
   - Isolation Forest — flags anomalous traffic that doesn't match any known attack signature
 - **MySQL persistence** of every detection
-- **Live dashboard** (Flask + Plotly) — auto-refreshing stats, attack/protocol distribution charts, traffic timeline, top talkers, searchable/filterable detection log, network risk level
+- **Live dashboard** (Plotly) — auto-refreshing stats, attack/protocol distribution charts, traffic timeline, top talkers, searchable/filterable detection log, network risk level
 - **CSV and PDF export** of detection records
 
 ---
@@ -41,7 +41,7 @@ ML Inference               XGBoost classifier + Isolation Forest anomaly detecto
 MySQL Storage             (detections table)
         │
         ▼
-Flask + Plotly Dashboard  (search, charts, CSV/PDF export)
+Plotly Dashboard  (search, charts, CSV/PDF export)
 ```
 
 ---
@@ -110,7 +110,7 @@ NETWORK_INTRUSION_DETECTION/
 | Packet capture | Scapy |
 | Feature engineering | Custom flow reconstruction (CICFlowMeter-equivalent) |
 | ML models | XGBoost, scikit-learn (Isolation Forest) |
-| Backend | Flask |
+| Backend |
 | Database | MySQL |
 | Visualization | Plotly, Matplotlib |
 | Reporting | ReportLab (PDF) |
@@ -209,7 +209,7 @@ A core design goal of this project: the **live feature extractor produces the ex
 
 For running continuously rather than in a terminal:
 
-- Disable Flask debug mode (`app.run(debug=False)`) before exposing the dashboard beyond localhost
+- Disable debug mode (`app.run(debug=False)`) before exposing the dashboard beyond localhost
 - Run `main.py` and `app.py` as background services (systemd on Linux, Task Scheduler/NSSM on Windows)
 - Use a dedicated low-privilege MySQL user rather than `root`
 - Put the dashboard behind a reverse proxy (Nginx) + production WSGI server (Gunicorn/Waitress) if accessed by others on the network
@@ -224,7 +224,7 @@ For running continuously rather than in a terminal:
 - **"Permission denied" / no packets captured** — Packet capture needs elevated privileges. On Windows, run your terminal as Administrator. On Linux, run with `sudo` or grant capability once with the `setcap` command shown above.
 - **Npcap not found (Windows)** — Make sure Npcap is installed with "WinPcap API-compatible mode" checked during installation.
 - **MySQL connection errors** — Double-check `.env` has the correct host, username, and password, and that the `network_ids` database has actually been created.
-- **Flask dashboard doesn't load** — Confirm `main.py` (capture engine) is running in one terminal and `app.py` (dashboard) in a separate one, and that port 5000 isn't already in use.
+- **Dashboard doesn't load** — Confirm `main.py` (capture engine) is running in one terminal and `app.py` (dashboard) in a separate one, and that port 5000 isn't already in use.
 - **`ModuleNotFoundError` after setup** — Make sure your virtual environment is activated (`venv\Scripts\activate` on Windows, `source venv/bin/activate` on Mac/Linux) before running `pip install -r requirements.txt`.
 
 ## License
